@@ -441,7 +441,7 @@ class ctools_export_ui {
     if ($form_state['values']['search']) {
       $search = strtolower($form_state['values']['search']);
       foreach ($this->list_search_fields() as $field) {
-        if (strpos(strtolower($item->$field), $search) !== FALSE) {
+        if (strpos(strtolower($item->{$field}), $search) !== FALSE) {
           $hit = TRUE;
           break;
         }
@@ -1402,7 +1402,7 @@ function ctools_export_ui_edit_item_wizard_form(&$form, &$form_state) {
     $method = 'edit_form';
   }
 
-  $form_state['object']->$method($form, $form_state);
+  $form_state['object']->{$method}($form, $form_state);
   return $form;
 }
 
@@ -1415,7 +1415,7 @@ function ctools_export_ui_edit_item_wizard_form_validate(&$form, &$form_state) {
     $method = 'edit_form_validate';
   }
 
-  $form_state['object']->$method($form, $form_state);
+  $form_state['object']->{$method}($form, $form_state);
 
   // Additionally, if there were no errors from that, and we're finishing,
   // perform a final validate to make sure everything is ok.
@@ -1433,7 +1433,7 @@ function ctools_export_ui_edit_item_wizard_form_submit(&$form, &$form_state) {
     $method = 'edit_form_submit';
   }
 
-  $form_state['object']->$method($form, $form_state);
+  $form_state['object']->{$method}($form, $form_state);
 }
 
 /**

@@ -991,8 +991,8 @@ function ctools_get_keyword($page, $word) {
   // Create a complete set of keywords
   $keywords = array();
   foreach (array('arguments', 'relationships', 'contexts', 'requiredcontexts') as $type) {
-    if (!empty($page->$type) && is_array($page->$type)) {
-      foreach ($page->$type as $info) {
+    if (!empty($page->{$type}) && is_array($page->{$type})) {
+      foreach ($page->{$type} as $info) {
         $keywords[$info['keyword']] = TRUE;
       }
     }

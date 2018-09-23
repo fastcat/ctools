@@ -411,7 +411,7 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
       if ($type == 'conditions') {
         // if this does not match all of our conditions, skip it.
         foreach ($args as $key => $value) {
-          if (!isset($object->$key) || $object->$key != $value) {
+          if (!isset($object->{$key}) || $object->{$key} != $value) {
             continue 2;
           }
         }
@@ -608,11 +608,11 @@ function _ctools_export_unpack_object($schema, $data, $object = 'stdClass') {
 
   // Go through our schema and build correlations.
   foreach ($schema['fields'] as $field => $info) {
-    if (isset($data->$field)) {
-      $object->$field = empty($info['serialize']) ? $data->$field : unserialize(db_decode_blob($data->$field));
+    if (isset($data->{$field})) {
+      $object->{$field} = empty($info['serialize']) ? $data->{$field} : unserialize(db_decode_blob($data->{$field}));
     }
     else {
-      $data->$field = NULL;
+      $data->{$field} = NULL;
     }
   }
 
@@ -622,7 +622,7 @@ function _ctools_export_unpack_object($schema, $data, $object = 'stdClass') {
       if (!empty($join['load'])) {
         foreach ($join['load'] as $field) {
           $info = $join_schema['fields'][$field];
-          $object->$field = empty($info['serialize']) ? $data->$field : unserialize(db_decode_blob($data->$field));
+          $object->{$field} = empty($info['serialize']) ? $data->{$field} : unserialize(db_decode_blob($data->{$field}));
         }
       }
     }
@@ -721,21 +721,21 @@ function ctools_export_object($table, $object, $indent = '', $identifier = NULL,
     if (!empty($info['no export'])) {
       continue;
     }
-    if (!isset($object->$field)) {
+    if (!isset($object->{$field})) {
       if (isset($info['default'])) {
-        $object->$field = $info['default'];
+        $object->{$field} = $info['default'];
       }
       else {
-        $object->$field = '';
+        $object->{$field} = '';
       }
     }
 
     // Note: This is the *field* export callback, not the table one!
     if (!empty($info['export callback']) && function_exists($info['export callback'])) {
-      $output .= $indent . '$' . $identifier . '->' . $field . ' = ' . $info['export callback']($object, $field, $object->$field, $indent) . ";\n";
+      $output .= $indent . '$' . $identifier . '->' . $field . ' = ' . $info['export callback']($object, $field, $object->{$field}, $indent) . ";\n";
     }
     else {
-      $value = $object->$field;
+      $value = $object->{$field};
       if ($info['type'] == 'int') {
         $value = (isset($info['size']) && $info['size'] == 'tiny') ? (bool) $value : (int) $value;
       }
@@ -921,13 +921,13 @@ function ctools_export_new_object($table, $set_defaults = TRUE) {
   $object = new $export['object'];
   foreach ($schema['fields'] as $field => $info) {
     if (isset($info['object default'])) {
-      $object->$field = $info['object default'];
+      $object->{$field} = $info['object default'];
     }
     else if (isset($info['default'])) {
-      $object->$field = $info['default'];
+      $object->{$field} = $info['default'];
     }
     else {
-      $object->$field = NULL;
+      $object->{$field} = NULL;
     }
   }
 
@@ -996,7 +996,7 @@ function ctools_export_default_to_hook_code($schema, $table, $names, $name) {
     $output .= "  \${$export['identifier']}s = array();\n\n";
     foreach ($objects as $object) {
       $output .= ctools_export_crud_export($table, $object, '  ');
-      $output .= "  \${$export['identifier']}s['" . check_plain($object->$export['key']) . "'] = \${$export['identifier']};\n\n";
+      $output .= "  \${$export['identifier']}s['" . check_plain($object->{$export['key']}) . "'] = \${$export['identifier']};\n\n";
     }
     $output .= "  return \${$export['identifier']}s;\n";
     $output .= "}\n";
@@ -1016,15 +1016,15 @@ function ctools_export_default_list($table, $schema) {
   foreach ($items as $item) {
     // Try a couple of possible obvious title keys:
     if (!empty($item->admin_title)) {
-      $string = "$item->admin_title (" . $item->$export_key . ")";
+      $string = "$item->admin_title (" . $item->{$export_key} . ")";
     }
     elseif (!empty($item->title)) {
-      $string = "$item->title (" . $item->$export_key . ")";
+      $string = "$item->title (" . $item->{$export_key} . ")";
     }
     else {
-      $string = $item->$export_key;
+      $string = $item->{$export_key};
     }
-    $list[$item->$export_key] = check_plain($string);
+    $list[$item->{$export_key}] = check_plain($string);
   }
   return $list;
 }
